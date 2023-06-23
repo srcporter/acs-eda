@@ -1,0 +1,70 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acseda
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acs-eda
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: acs-eda
+  template:
+    metadata:
+      labels:
+        app: acs-eda
+    spec:
+      serviceAccountName: acseda
+      automountServiceAccountToken: false
+      containers:
+      - name: acs-eda
+        image: quay.io/cporter/acs-eda:0.6
+        imagePullPolicy: Always
+        resources:
+          requests:
+           memory: "256Mi"
+           cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+            add: ["NET_RAW"]
+          seccompProfile:
+            type: RuntimeDefault
+        ports:
+        - containerPort: 5000
+          name: webhook
+          protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: edasvc
+spec:
+  type: ClusterIP
+  selector:
+    app: acs-eda
+  ports:
+  - name: webhook
+    port: 5000
+    targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eda-lb
+spec:
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: acs-eda
+  type: LoadBalancer
