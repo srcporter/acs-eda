@@ -21,27 +21,35 @@ spec:
     spec:
       serviceAccountName: acseda
       automountServiceAccountToken: false
+      volumes:
+        - name: kubeconfig-volume
+          secret:
+            secretName: kubeconfig
       containers:
-      - name: acs-eda
-        image: quay.io/cporter/acs-eda:0.9
-        imagePullPolicy: Always
-        resources:
-          requests:
-           memory: "256Mi"
-           cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop: ["ALL"]
-          seccompProfile:
-            type: RuntimeDefault
-        ports:
-        - containerPort: 5000
-          name: webhook
-          protocol: TCP
+        - name: acs-eda
+          image: quay.io/cporter/acs-eda:0.3
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: kubeconfig-volume
+              readOnly: true
+              mountPath: "/etc/kubeconfig"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+          ports:
+          - containerPort: 5000
+            name: webhook
+            protocol: TCP
 ---
 apiVersion: v1
 kind: Service
@@ -55,3 +63,19 @@ spec:
   - name: webhook
     port: 5000
     targetPort: 5000
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: edaroute
+spec:
+  host: acseda.apps.chris-ocp-01.ocp.infra.rox.systems
+  port:
+    targetPort: webhook
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: edasvc
+    weight: 100
+  wildcardPolicy: None

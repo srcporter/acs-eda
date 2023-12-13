@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - name: Forensics Find
+      debug:
+        msg: Forensics

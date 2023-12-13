@@ -1,19 +1,25 @@
 ---
 - name: Webhook
   hosts: all
-
- ## Define our source for events
   sources:
-   - ansible.eda.webhook:
-       host: 0.0.0.0
-       port: 5000
-
- ## Define the conditions we are looking for
+    - ansible.eda.webhook:
+        host: 0.0.0.0
+        port: 5000
   rules:
-   - name: Say Hello
-     condition: event.payload.message == "stackrox"
-
- ## Define the action we should take should the condition be met
-     action:
-       run_playbook:
-         name: say-what.yml
+    - name: Say Hello
+      condition: event.payload.message == "stackrox"
+      action:
+        run_playbook:
+          name: debug.yml
+    - name: Forensics Facts
+      condition: event.payload.policy.id == "32081d8e-84cd-4d67-b016-fe481c55b93a"
+      action:
+        set_fact:
+          fact:
+            alert: "{{ event.payload }}"
+    - name: Forensics Run
+      condition: event.payload.policy.id == "32081d8e-84cd-4d67-b016-fe481c55b93a"
+      action:
+        run_playbook:
+            name: forensics-find.yml
+            set_facts: true
