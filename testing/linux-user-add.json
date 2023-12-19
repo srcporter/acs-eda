@@ -1,0 +1,144 @@
+{
+  "id": "0e9b42af-84b0-48e6-a9f4-b8d71d6a1438",
+  "policy": {
+    "id": "32081d8e-84cd-4d67-b016-fe481c55b93a",
+    "name": "Linux User Add Execution",
+    "description": "Detects when the 'useradd' or 'adduser' binary is executed, which can be used to add a new linux user.",
+    "rationale": "Users or groups added in run time can be used to take ownership of files and processes.",
+    "remediation": "Consider using a base image that doesn't have a shell such as SCRATCH or gcr.io/distroless. If not, modify your Dockerfile to use the exec form of CMD/ENTRYPOINT ([\"using braces\"]) instead of the shell form (no braces)",
+    "disabled": false,
+    "categories": [
+      "Privileges",
+      "System Modification"
+    ],
+    "lifecycleStages": [
+      "RUNTIME"
+    ],
+    "eventSource": "DEPLOYMENT_EVENT",
+    "exclusions": [],
+    "scope": [],
+    "severity": "HIGH_SEVERITY",
+    "enforcementActions": [
+      "KILL_POD_ENFORCEMENT",
+      "FAIL_KUBE_REQUEST_ENFORCEMENT"
+    ],
+    "notifiers": [
+      "3ef03e50-03d2-49d3-b901-543d881763d2",
+      "e3dfd573-a4cf-4f59-8501-a5b777483bc9"
+    ],
+    "lastUpdated": "2023-12-08T19:04:18.801747758Z",
+    "SORTName": "Linux User Add Execution",
+    "SORTLifecycleStage": "RUNTIME",
+    "SORTEnforcement": true,
+    "policyVersion": "1.1",
+    "policySections": [
+      {
+        "sectionName": "",
+        "policyGroups": [
+          {
+            "fieldName": "Process Name",
+            "booleanOperator": "OR",
+            "negate": false,
+            "values": [
+              {
+                "value": "useradd|adduser|usermod"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "mitreAttackVectors": [
+      {
+        "tactic": "TA0003",
+        "techniques": [
+          "T1098",
+          "T1136"
+        ]
+      }
+    ],
+    "criteriaLocked": true,
+    "mitreVectorsLocked": true,
+    "isDefault": true
+  },
+  "lifecycleStage": "RUNTIME",
+  "clusterId": "cba6a692-e067-4061-8518-648c47587d53",
+  "clusterName": "production",
+  "namespace": "boutique",
+  "namespaceId": "9ff2be10-b614-49c8-933b-6af755d1cda3",
+  "deployment": {
+    "id": "e7322e01-c86d-4c5f-aac1-89118d6197c6",
+    "name": "adservice",
+    "type": "Deployment",
+    "namespace": "boutique",
+    "namespaceId": "9ff2be10-b614-49c8-933b-6af755d1cda3",
+    "labels": {
+      "app.openshift.io/runtime": "java"
+    },
+    "clusterId": "cba6a692-e067-4061-8518-648c47587d53",
+    "clusterName": "production",
+    "containers": [
+      {
+        "image": {
+          "id": "sha256:e8b6541a8502cd48706b298ba72db2c1a9fa6e12d2033065cc589d972be8155d",
+          "name": {
+            "registry": "gcr.io",
+            "remote": "google-samples/microservices-demo/adservice",
+            "tag": "v0.5.0",
+            "fullName": "gcr.io/google-samples/microservices-demo/adservice:v0.5.0"
+          },
+          "notPullable": false,
+          "isClusterLocal": false
+        },
+        "name": "server"
+      }
+    ],
+    "annotations": {},
+    "inactive": false
+  },
+  "violations": [],
+  "processViolation": {
+    "message": "Binary '/usr/sbin/adduser' executed with arguments 'chris' under user ID 1000710000",
+    "processes": [
+      {
+        "id": "dbb75587-c292-4a2e-9354-47c9961f22ea",
+        "deploymentId": "e7322e01-c86d-4c5f-aac1-89118d6197c6",
+        "containerName": "server",
+        "podId": "adservice-589976ccc8-qqx2n",
+        "podUid": "a1812349-2b00-5cdb-a069-9bc415812270",
+        "signal": {
+          "id": "4df3ce48-98fb-11ee-947b-0a580a810214",
+          "containerId": "6a7fc1c89fda",
+          "time": "2023-12-12T14:32:43.097230368Z",
+          "name": "adduser",
+          "args": "chris",
+          "execFilePath": "/usr/sbin/adduser",
+          "pid": 113721,
+          "uid": 1000710000,
+          "gid": 0,
+          "lineage": [],
+          "scraped": false,
+          "lineageInfo": [
+            {
+              "parentUid": 1000710000,
+              "parentExecFilePath": "/bin/sh"
+            }
+          ]
+        },
+        "clusterId": "",
+        "namespace": "boutique",
+        "containerStartTime": "2023-12-12T14:08:50Z",
+        "imageId": "sha256:e8b6541a8502cd48706b298ba72db2c1a9fa6e12d2033065cc589d972be8155d"
+      }
+    ]
+  },
+  "enforcement": {
+    "action": "KILL_POD_ENFORCEMENT",
+    "message": "StackRox killed pods in deployment in response to this policy violation."
+  },
+  "time": "2023-12-12T14:32:40.711473018Z",
+  "firstOccurred": "2023-12-12T14:32:40.711473018Z",
+  "resolvedAt": null,
+  "state": "ACTIVE",
+  "snoozeTill": null
+}

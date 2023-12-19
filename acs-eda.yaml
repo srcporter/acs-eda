@@ -27,7 +27,7 @@ spec:
             secretName: kubeconfig
       containers:
         - name: acs-eda
-          image: quay.io/cporter/acs-eda:0.3
+          image: quay.io/cporter/acs-eda:0.5
           imagePullPolicy: Always
           volumeMounts:
             - name: kubeconfig-volume

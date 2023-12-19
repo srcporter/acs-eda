@@ -1,0 +1,122 @@
+{            "alert": {
+                "clusterId": "1c9dbd4c-5b10-4a10-9051-7c2dc4ebacdb",
+                "clusterName": "production",
+                "deployment": {
+                    "annotations": {
+                        "app.openshift.io/connects-to": "[{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":\"cartservice\"},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":\"adservice\"},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"name\":\"recommendationservice\"},{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"n..."
+                    },
+                    "clusterId": "1c9dbd4c-5b10-4a10-9051-7c2dc4ebacdb",
+                    "clusterName": "production",
+                    "containers": [
+                        {
+                            "image": {
+                                "id": "sha256:a486634be80809784d01dc364f06024f3014f7d62d8232c79aa593806eaad095",
+                                "name": {
+                                    "fullName": "gcr.io/google-samples/microservices-demo/frontend:v0.5.0",
+                                    "registry": "gcr.io",
+                                    "remote": "google-samples/microservices-demo/frontend",
+                                    "tag": "v0.5.0"
+                                }
+                            },
+                            "name": "server"
+                        }
+                    ],
+                    "id": "bf7dd8d0-db6b-4b00-8ef7-7152d6fd92f4",
+                    "labels": {
+                        "app.openshift.io/runtime": "golang"
+                    },
+                    "name": "frontend",
+                    "namespace": "boutique",
+                    "namespaceId": "b1bf3b47-835b-47e1-800f-1c519462ed42",
+                    "type": "Deployment"
+                },
+                "firstOccurred": "2023-12-15T15:46:26.648241746Z",
+                "id": "af1b38f9-3c5b-442d-9b5d-4d5b3fd43b48",
+                "lifecycleStage": "RUNTIME",
+                "namespace": "boutique",
+                "namespaceId": "b1bf3b47-835b-47e1-800f-1c519462ed42",
+                "policy": {
+                    "SORTEnforcement": true,
+                    "SORTLifecycleStage": "RUNTIME",
+                    "SORTName": "Linux User Add Execution",
+                    "categories": [
+                        "Privileges",
+                        "System Modification"
+                    ],
+                    "criteriaLocked": true,
+                    "description": "Detects when the 'useradd' or 'adduser' binary is executed, which can be used to add a new linux user.",
+                    "eventSource": "DEPLOYMENT_EVENT",
+                    "id": "32081d8e-84cd-4d67-b016-fe481c55b93a",
+                    "isDefault": true,
+                    "lastUpdated": "2023-12-12T20:17:51.577037535Z",
+                    "lifecycleStages": [
+                        "RUNTIME"
+                    ],
+                    "mitreAttackVectors": [
+                        {
+                            "tactic": "TA0003",
+                            "techniques": [
+                                "T1098",
+                                "T1136"
+                            ]
+                        }
+                    ],
+                    "mitreVectorsLocked": true,
+                    "name": "Linux User Add Execution",
+                    "notifiers": [
+                        "3ef03e50-03d2-49d3-b901-543d881763d2",
+                        "e3dfd573-a4cf-4f59-8501-a5b777483bc9"
+                    ],
+                    "policySections": [
+                        {
+                            "policyGroups": [
+                                {
+                                    "fieldName": "Process Name",
+                                    "values": [
+                                        {
+                                            "value": "useradd|adduser|usermod"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "policyVersion": "1.1",
+                    "rationale": "Users or groups added in run time can be used to take ownership of files and processes.",
+                    "remediation": "Consider using a base image that doesn't have a shell such as SCRATCH or gcr.io/distroless. If not, modify your Dockerfile to use the exec form of CMD/ENTRYPOINT ([\"using braces\"]) instead of the shell form (no braces)",
+                    "severity": "HIGH_SEVERITY"
+                },
+                "processViolation": {
+                    "message": "Binary '/usr/sbin/adduser' executed with arguments 'chris' under user ID 1000790000",
+                    "processes": [
+                        {
+                            "containerName": "server",
+                            "containerStartTime": "2023-12-15T14:50:34Z",
+                            "deploymentId": "bf7dd8d0-db6b-4b00-8ef7-7152d6fd92f4",
+                            "id": "c0525673-697b-47c5-8cca-a300568036f0",
+                            "imageId": "sha256:a486634be80809784d01dc364f06024f3014f7d62d8232c79aa593806eaad095",
+                            "namespace": "boutique",
+                            "podId": "frontend-6847b59dfb-lrgmf",
+                            "podUid": "228dfb46-8c70-5b67-940e-ff8b135454e4",
+                            "signal": {
+                                "args": "chris",
+                                "containerId": "b48c4388a0fa",
+                                "execFilePath": "/usr/sbin/adduser",
+                                "id": "1b41767c-9b61-11ee-b97d-0a580a830015",
+                                "lineageInfo": [
+                                    {
+                                        "parentExecFilePath": "/bin/sh",
+                                        "parentUid": 1000790000
+                                    }
+                                ],
+                                "name": "adduser",
+                                "pid": 149552,
+                                "time": "2023-12-15T15:46:29.498622451Z",
+                                "uid": 1000790000
+                            }
+                        }
+                    ]
+                },
+                "time": "2023-12-15T15:46:26.648241746Z"
+            }
+}

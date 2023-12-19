@@ -3,4 +3,4 @@
   tasks:
     - name: Print message
       ansible.builtin.debug:
-        msg: "{{ ansible_eda.event.payload }}"
+        msg: "ACS Debug Message"

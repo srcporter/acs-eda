@@ -4,6 +4,7 @@ RUN dnf update -y
 RUN dnf install -y gcc python3 python3-pip python3-devel java-17-openjdk java-17-openjdk-devel maven-openjdk17 kubernetes-client
 
 RUN mkdir -p /etc/ansible /ansible /ansible/playbooks /ansible/collections /ansible/roles /ansible/tmp /ansible/galaxy_cache
+RUN chmod -R a+w /ansible/tmp
 WORKDIR /ansible/playbooks
 
 #RUN set -x && \
@@ -21,13 +22,14 @@ ENV ANSIBLE_HOME /ansible
 ENV PYTHONPATH /ansible/lib
 ENV ANSIBLE_CONFIG /ansible/ansible.cfg
 ENV COLLECTIONS_PATH /ansible/collections
+ENV K8S_AUTH_KUBECONFIG /etc/kubeconfig/kubeconfig
 ENV PATH /ansible/bin:$PATH
 
 COPY playbooks/*.yml /ansible/playbooks/
 COPY ansible.cfg /ansible/
 
 RUN pip3 install --upgrade pip
-RUN pip3 install ansible ansible-runner ansible-rulebook 
+RUN pip3 install ansible ansible-runner ansible-rulebook pyyaml kubernetes
 RUN ansible-galaxy collection install -p $COLLECTIONS_PATH ansible.eda 
 RUN ansible-galaxy collection install -p $COLLECTIONS_PATH kubernetes.core
 

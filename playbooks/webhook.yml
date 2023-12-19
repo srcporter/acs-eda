@@ -6,20 +6,23 @@
         host: 0.0.0.0
         port: 5000
   rules:
-    - name: Say Hello
-      condition: event.payload.message == "stackrox"
+    - name: debug
+      condition: event.payload is defined
+      enabled: false
       action:
         run_playbook:
           name: debug.yml
-    - name: Forensics Facts
-      condition: event.payload.policy.id == "32081d8e-84cd-4d67-b016-fe481c55b93a"
+
+    - name: stackrox
+      condition: event.payload.message == "stackrox"
       action:
-        set_fact:
-          fact:
-            alert: "{{ event.payload }}"
+        run_playbook:
+          name: stackrox.yml
+          json_mode: false
+
     - name: Forensics Run
-      condition: event.payload.policy.id == "32081d8e-84cd-4d67-b016-fe481c55b93a"
+      condition: event.payload.alert.policy.name == "Linux User Add Execution"
       action:
         run_playbook:
             name: forensics-find.yml
-            set_facts: true
+            json_mode: false

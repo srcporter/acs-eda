@@ -2,5 +2,13 @@
 - hosts: all
   tasks:
     - name: Forensics Find
-      debug:
-        msg: Forensics
+      ansible.builtin.debug:
+        msg: "received alert from deployment {{ ansible_eda.event.payload.alert.deployment.name }}"
+    - name: KubeExec
+      kubernetes.core.k8s_exec:
+        namespace: "{{ ansible_eda.event.payload.alert.namespace }}"
+        pod: "{{ ansible_eda.event.payload.alert.processViolation.processes[0].podId }}"
+        command: 'find / -type d \( -path /sys -o -path /srv -o -path /proc \) -prune -o -type f -mmin -5 -print'
+      register: find_output
+      ignore_errors: True
+    - debug: var=find_output.stdout_lines
