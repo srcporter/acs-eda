@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+    - name: OC-Debug-debug
+      ansible.builtin.debug:
+        msg: "received alert from deployment {{ ansible_eda.event.payload.alert.deployment.name }} in pod {{ ansible_eda.event.payload.alert.processViolation.processes[-1].podId }}"
+    - name: OC-Debug-forensics
+      register: find_output
+      ignore_errors: True
+    - debug: var=find_output.stdout_lines

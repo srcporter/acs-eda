@@ -1,0 +1,5 @@
+FROM fedora:latest
+
+RUN dnf update -y 
+
+CMD find / -type d \( -path /sys -o -path /srv -o -path /proc -o -path /dev \) -prune -o -type f -mmin -5 -print

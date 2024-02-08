@@ -20,9 +20,16 @@
           name: stackrox.yml
           json_mode: false
 
-    - name: Forensics Run
+    - name: Forensics Find
       condition: event.payload.alert.policy.name == "Linux User Add Execution"
       action:
         run_playbook:
             name: forensics-find.yml
+            json_mode: false
+
+    - name: Forensics Net
+      condition: event.payload.alert.policy.name == "Linux User Add Execution"
+      action:
+        run_playbook:
+            name: forensics-net.yml
             json_mode: false
